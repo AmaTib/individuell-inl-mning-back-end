@@ -40,6 +40,20 @@ app.post("/players", (req, res) => {
   console.log(players);
 });
 
+//update/edit player
+app.put("/players/:id", (req, res) => {
+  //updatera - REPLACE HELA OBJEKTET
+  let onePlayer = players.find((player) => player.id == req.params.id);
+  if (onePlayer == undefined) {
+    res.status(404).send("Finns inte");
+  }
+  onePlayer.name = req.body.name;
+  onePlayer.jersey = req.body.jersey;
+  onePlayer.position = req.body.position;
+  onePlayer.id = req.body.id;
+  res.status(204).send("Updated");
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
