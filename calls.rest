@@ -12,19 +12,22 @@ POST http://localhost:3000/players
 Content-Type: application/json; charset=utf-8
 
 {
-    "name": "Test",
-    "jersey": "0",
-    "position": "test",
-    "id": "100"
+    "name": "Peter Forsberg",
+    "jersey": "21",
+    "position": "Center"
 }
 
-### Edit player
-PUT   http://localhost:3000/players/9
+### Edit player with id 2
+PUT   http://localhost:3000/players/2
 Content-Type: application/json; charset=utf-8
 
 {
-    "name": "Markus Näslund",
-    "jersey": "19",
-    "position": "Left Wing",
-    "id": "9"
+    "name": "Peter Forsberg",
+    "jersey": "21",
+    "position": "Center/Forward"
+    
 }
+
+###Delete player with id 2
+DELETE http://localhost:3000/players/2
+
