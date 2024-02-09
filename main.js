@@ -1,6 +1,12 @@
 const { players } = require("./players");
 const { generateUniqueId } = require("./idFunction");
 
+const readline = require("readline/promises");
+const { stdin: input, stdout: output } = require("process");
+const rl = readline.createInterface({ input, output });
+const { sequelize, Player } = require("./models");
+const migrationhelper = require("./migrationhelper");
+
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -54,6 +60,7 @@ app.put("/players/:id", (req, res) => {
   res.status(204).send("Updated");
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
+  await migrationhelper.migrate();
   console.log(`Example app listening on port ${port}`);
 });
