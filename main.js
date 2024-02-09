@@ -1,5 +1,5 @@
-const { players } = require("./players");
-const { generateUniqueId } = require("./idFunction");
+/* const { players } = require("./players");
+const { generateUniqueId } = require("./idFunction"); */
 
 const readline = require("readline/promises");
 const { stdin: input, stdout: output } = require("process");
@@ -17,39 +17,61 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //REQUESTS
-//get all players
-app.get("/players", (req, res) => {
-  res.json(players);
-  console.log(players);
+//get all players (from database)
+app.get("/players", async (req, res) => {
+  let players = await Player.findAll();
+  let result = players.map((player) => ({
+    id: player.id,
+    name: player.name,
+    jersey: player.jersey,
+    position: player.position,
+  }));
+
+  res.json(result);
+  console.log(result);
 });
 
 //get players with specific id
-app.get("/players/:id", (req, res) => {
+/* app.get("/players/:id", (req, res) => {
   let onePlayer = players.find((player) => player.id === req.params.id);
   if (onePlayer === undefined) {
     res.status(404).send("Finns inte");
   }
   res.json(onePlayer);
   console.log(onePlayer);
-});
+}); */
 
 //creates new player and pushes to "players" array
-app.post("/players", (req, res) => {
-  const player = {
-    name: req.body.name,
-    jersey: req.body.jersey,
-    position: req.body.position,
-    id: generateUniqueId(),
-  };
-  players.push(player);
-  res.status(201).send("Created");
-  console.log(players);
+app.post("/players", async (req, res) => {
+  const { name, jersey, position } = req.body;
+  try {
+    const thisPlayer = await Player.create({ name, jersey, position });
+    return res.json(thisPlayer);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
 });
 
 //update/edit player
-app.put("/players/:id", (req, res) => {
-  //updatera - REPLACE HELA OBJEKTET
-  let onePlayer = players.find((player) => player.id == req.params.id);
+//updatera - REPLACE HELA OBJEKTET
+app.put("/players/:id", async (req, res) => {
+  const playerId = req.params.id;
+  const { name, jersey, position } = req.body;
+
+  const thisPlayer = await Player.findOne({
+    where: { id: playerId },
+  });
+
+  thisPlayer.name = name;
+  thisPlayer.jersey = jersey;
+  thisPlayer.position = position;
+
+  await thisPlayer.save();
+
+  return res.status(204).json({ err: "ok" });
+
+  /*  let onePlayer = players.find((player) => player.id == req.params.id);
   if (onePlayer == undefined) {
     res.status(404).send("Finns inte");
   }
@@ -57,7 +79,17 @@ app.put("/players/:id", (req, res) => {
   onePlayer.jersey = req.body.jersey;
   onePlayer.position = req.body.position;
   onePlayer.id = req.body.id;
-  res.status(204).send("Updated");
+  res.status(204).send("Updated"); */
+});
+
+app.delete("/players/:id", async (req, res) => {
+  const playerId = req.params.id;
+  const thisPlayer = await Player.findOne({
+    where: { id: playerId },
+  });
+
+  await thisPlayer.destroy();
+  return res.json({ message: "Employee deleted!" });
 });
 
 app.listen(port, async () => {
