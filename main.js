@@ -1,11 +1,12 @@
 /* const { players } = require("./players");
 const { generateUniqueId } = require("./idFunction"); */
 
-const readline = require("readline/promises");
-const { stdin: input, stdout: output } = require("process");
-const rl = readline.createInterface({ input, output });
+/* const readline = require("readline/promises");
+const { stdin: input, stdout: output } = require("process");  //ta bort!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const rl = readline.createInterface({ input, output }); */
 const { sequelize, Player } = require("./models");
 const migrationhelper = require("./migrationhelper");
+const { validatePlayer } = require("./validators/playerValidator");
 
 const express = require("express");
 const cors = require("cors");
@@ -41,8 +42,8 @@ app.get("/players", async (req, res) => {
   console.log(onePlayer);
 }); */
 
-//creates new player and pushes to "players" array
-app.post("/players", async (req, res) => {
+//creates new player
+app.post("/players", validatePlayer, async (req, res) => {
   const { name, jersey, position } = req.body;
   try {
     const thisPlayer = await Player.create({ name, jersey, position });
