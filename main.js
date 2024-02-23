@@ -13,7 +13,7 @@ const cors = require("cors");
 const app = express();
 const port = 3000;
 
-var bodyParser = require("body-parser"); //för att rest-client verktyget ska fungera...?
+var bodyParser = require("body-parser"); //för att rest-client verktyget ska fungera...? // nuförtiden används express.json ???
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -56,7 +56,7 @@ app.post("/players", validatePlayer, async (req, res) => {
 
 //update/edit player
 //updatera - REPLACE HELA OBJEKTET
-app.put("/players/:id", async (req, res) => {
+app.put("/players/:id", validatePlayer, async (req, res) => {
   const playerId = req.params.id;
   const { name, jersey, position } = req.body;
 
