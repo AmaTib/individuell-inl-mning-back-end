@@ -1,38 +1,29 @@
-/* const { players } = require("./players");
-const { generateUniqueId } = require("./idFunction"); */
-
 /* const readline = require("readline/promises");
 const { stdin: input, stdout: output } = require("process");  //ta bort!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 const rl = readline.createInterface({ input, output }); */
+
 const { sequelize, Player } = require("./models");
 const migrationhelper = require("./migrationhelper");
 const { validatePlayer } = require("./validators/playerValidator");
+const {
+  getAllPlayers,
+  createPlayer,
+  editPlayer,
+} = require("./controllers/playerController");
 
 const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = 3000;
 
-var bodyParser = require("body-parser"); //för att rest-client verktyget ska fungera...? // nuförtiden används express.json ???
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
-//REQUESTS
-//get all players (from database)
-app.get("/players", async (req, res) => {
-  let players = await Player.findAll();
-  let result = players.map((player) => ({
-    id: player.id,
-    name: player.name,
-    jersey: player.jersey,
-    position: player.position,
-  }));
+//REQUESTS START----------------------------------------------------------
+//get all players
+app.get("/players", getAllPlayers);
 
-  res.json(result);
-  console.log(result);
-});
-
-//get players with specific id
+//Get players with specific id
 /* app.get("/players/:id", (req, res) => {
   let onePlayer = players.find((player) => player.id === req.params.id);
   if (onePlayer === undefined) {
@@ -43,46 +34,12 @@ app.get("/players", async (req, res) => {
 }); */
 
 //creates new player
-app.post("/players", validatePlayer, async (req, res) => {
-  const { name, jersey, position } = req.body;
-  try {
-    const thisPlayer = await Player.create({ name, jersey, position });
-    return res.json(thisPlayer);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
-  }
-});
+app.post("/players", validatePlayer, createPlayer);
 
 //update/edit player
-//updatera - REPLACE HELA OBJEKTET
-app.put("/players/:id", validatePlayer, async (req, res) => {
-  const playerId = req.params.id;
-  const { name, jersey, position } = req.body;
+app.put("/players/:id", validatePlayer, editPlayer);
 
-  const thisPlayer = await Player.findOne({
-    where: { id: playerId },
-  });
-
-  thisPlayer.name = name;
-  thisPlayer.jersey = jersey;
-  thisPlayer.position = position;
-
-  await thisPlayer.save();
-
-  return res.status(204).json({ err: "ok" });
-
-  /*  let onePlayer = players.find((player) => player.id == req.params.id);
-  if (onePlayer == undefined) {
-    res.status(404).send("Finns inte");
-  }
-  onePlayer.name = req.body.name;
-  onePlayer.jersey = req.body.jersey;
-  onePlayer.position = req.body.position;
-  onePlayer.id = req.body.id;
-  res.status(204).send("Updated"); */
-});
-
+//delete player
 app.delete("/players/:id", async (req, res) => {
   const playerId = req.params.id;
   const thisPlayer = await Player.findOne({
@@ -92,6 +49,7 @@ app.delete("/players/:id", async (req, res) => {
   await thisPlayer.destroy();
   return res.json({ message: "Employee deleted!" });
 });
+//REQUESTS END------------------------------------------------------------
 
 app.listen(port, async () => {
   await migrationhelper.migrate();
