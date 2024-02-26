@@ -1,7 +1,13 @@
 const { sequelize, Player } = require("../models");
 
 async function getAllPlayers(req, res) {
-  let players = await Player.findAll();
+  const sortCol = req.query.sortCol || "id";
+  const sortOrder = req.query.sortOrder || "asc";
+
+  const players = await Player.findAll({
+    order: [[sortCol, sortOrder]],
+  });
+
   let result = players.map((player) => ({
     id: player.id,
     name: player.name,

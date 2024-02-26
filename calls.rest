@@ -1,6 +1,6 @@
 
 ### Get complete list
-GET http://localhost:3000/players
+GET http://localhost:3000/players?sortCol=name&sortOrder
 
 
 ### Get playerwith specific id
