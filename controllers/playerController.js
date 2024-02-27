@@ -1,10 +1,18 @@
 const { sequelize, Player } = require("../models");
+const { Op } = require("sequelize");
 
 async function getAllPlayers(req, res) {
-  const sortCol = req.query.sortCol || "id";
-  const sortOrder = req.query.sortOrder || "asc";
+  const sortCol = req.query.sortCol || "id"; //för att sortera
+  const sortOrder = req.query.sortOrder || "asc"; //för att sortera
+
+  const q = req.query.q || ""; //för att söka
 
   const players = await Player.findAll({
+    where: {
+      name: {
+        [Op.like]: "%" + q + "%",
+      },
+    },
     order: [[sortCol, sortOrder]],
   });
 
