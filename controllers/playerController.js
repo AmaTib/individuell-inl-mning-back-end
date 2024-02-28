@@ -4,27 +4,42 @@ const { Op } = require("sequelize");
 async function getAllPlayers(req, res) {
   const sortCol = req.query.sortCol || "id"; //för att sortera
   const sortOrder = req.query.sortOrder || "asc"; //för att sortera
-
+  const offset = Number(req.query.offset || 0); //för att skapa sidor
+  const limit = Number(req.query.limit || 5); //för att skapa sidor
   const q = req.query.q || ""; //för att söka
 
-  const players = await Player.findAll({
+  const players = await Player.findAndCountAll({
     where: {
-      name: {
+      /* name: {
         [Op.like]: "%" + q + "%",
+      }, */
+      [Op.or]: {
+        name: { [Op.like]: "%" + q + "%" },
+        jersey: { [Op.like]: "%" + q + "%" },
+        position: { [Op.like]: "%" + q + "%" },
       },
     },
     order: [[sortCol, sortOrder]],
+
+    offset: offset,
+    limit: limit,
   });
 
-  let result = players.map((player) => ({
+  const total = players.count;
+
+  const result = players.rows.map((player) => ({
     id: player.id,
     name: player.name,
     jersey: player.jersey,
     position: player.position,
   }));
 
-  res.json(result);
   console.log(result);
+
+  return res.json({
+    total,
+    result,
+  });
 }
 
 async function createPlayer(req, res) {

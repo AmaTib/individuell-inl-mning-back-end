@@ -11,6 +11,7 @@ const {
   editPlayer,
 } = require("./controllers/playerController");
 
+const { check } = require("express-validator");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -23,18 +24,8 @@ app.use(cors());
 //get all players
 app.get("/players", getAllPlayers);
 
-//Get players with specific id
-/* app.get("/players/:id", (req, res) => {
-  let onePlayer = players.find((player) => player.id === req.params.id);
-  if (onePlayer === undefined) {
-    res.status(404).send("Finns inte");
-  }
-  res.json(onePlayer);
-  console.log(onePlayer);
-}); */
-
 //creates new player
-app.post("/players", validatePlayer, createPlayer);
+app.post("/players", check("q").escape(), validatePlayer, createPlayer);
 
 //update/edit player
 app.put("/players/:id", validatePlayer, editPlayer);
