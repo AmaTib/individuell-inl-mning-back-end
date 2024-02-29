@@ -38,7 +38,7 @@ app.delete("/players/:id", async (req, res) => {
   });
 
   await thisPlayer.destroy();
-  return res.json({ message: "Employee deleted!" });
+  return res.json({ message: "Player deleted!" });
 });
 //REQUESTS END------------------------------------------------------------
 
