@@ -48,7 +48,6 @@ async function createPlayer(req, res) {
     const thisPlayer = await Player.create({ name, jersey, position });
     return res.json(thisPlayer);
   } catch (err) {
-    console.log(err);
     return res.status(500).json(err);
   }
 }
@@ -57,17 +56,19 @@ async function editPlayer(req, res) {
   const playerId = req.params.id;
   const { name, jersey, position } = req.body;
 
-  const thisPlayer = await Player.findOne({
-    where: { id: playerId },
-  });
+  try {
+    const thisPlayer = await Player.findOne({
+      where: { id: playerId },
+    });
 
-  thisPlayer.name = name;
-  thisPlayer.jersey = jersey;
-  thisPlayer.position = position;
+    thisPlayer.name = name;
+    thisPlayer.jersey = jersey;
+    thisPlayer.position = position;
 
-  await thisPlayer.save();
-
-  return res.status(204).json({ err: "ok" });
+    await thisPlayer.save();
+  } catch (err) {
+    return res.status(204).json({ err: "ok" });
+  }
 }
 
 module.exports = {

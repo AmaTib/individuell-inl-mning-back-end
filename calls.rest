@@ -29,5 +29,5 @@ Content-Type: application/json; charset=utf-8
 }
 
 ###Delete player with id 2
-DELETE http://localhost:3000/players/22
+DELETE http://localhost:3000/players/23
 
