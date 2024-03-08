@@ -1,7 +1,3 @@
-/* const readline = require("readline/promises");
-const { stdin: input, stdout: output } = require("process");  //ta bort!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-const rl = readline.createInterface({ input, output }); */
-
 const { sequelize, Player } = require("./models");
 const migrationhelper = require("./migrationhelper");
 const { validatePlayer } = require("./validators/playerValidator");
